@@ -12,10 +12,12 @@
 //   ↓
 //PostgreSQL
 package com.dhruvaa___.demo;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/client")
@@ -26,20 +28,23 @@ public class ClientController {
     }
 
     @GetMapping
-    public List<Client> getClient() {
-        return service.getClient();
+    public ResponseEntity<List<Client>> getClient() {
+        return ResponseEntity.ok(service.getClient());
     }
 
     @GetMapping("/{cId}")
-    public Client getClientById(@PathVariable Long cId) {
-        return service.getClientById(cId);
+    public ResponseEntity<Client> getClientById(@PathVariable Long cId) {
+        Client client=service.getClientById(cId);
+        if (client==null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(client);
     }
 
     @PostMapping
-    public String addClient(@RequestBody ClientDTO dto)
+    public ResponseEntity<Client> addClient(@Valid @RequestBody ClientDTO dto)
     {
-        this.service.addClient(dto);
-        return "Client added";
+        Client client=service.addClient(dto);
+        return new ResponseEntity<>(client, HttpStatus.CREATED);
     }
 
     @PutMapping("/{cId}")
