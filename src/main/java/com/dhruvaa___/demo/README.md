@@ -38,3 +38,9 @@ PUT /client/{id}
 2. Configure PostgreSQL in application.properties
 3. Run the Spring Boot application
 4. Test APIs using Postman
+
+## ✅ Improvements
+- DTO layer implemented
+- Input validation using @NotBlank
+- Global exception handling
+- Proper HTTP status codes using ResponseEntity
