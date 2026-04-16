@@ -1,10 +1,9 @@
 package com.dhruvaa___.demo;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ClientService {
@@ -22,27 +21,28 @@ public class ClientService {
         return repo.save(client);
     }
 
-    public List<Client> getClient() {
-        return repo.findAll();
+    public Page<Client> getClient(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     public Client getClientById(Long id) {
         return repo.findById(id).orElse(null);
     }
 
-    public Client updateClient(Long id,Client updated)
+    public Client updateClient(Long id,ClientDTO updated)
     {
-        Client existing=repo.findById(id).orElse(null);
-        if(existing!=null) {
+        Client existing=repo.findById(id).orElseThrow(
+                ()-> new ClientNotFoundException("Client not found"+id)
+        );
             existing.setName(updated.getName());
             existing.setLawyers(updated.getLawyers());
-            repo.save(existing);
-        }
-        return null;
+            return  repo.save(existing);
     }
 
-    public void deleteClient(@PathVariable Long cId)
+    public void deleteClient(Long cId)
     {
+        if(!repo.existsById(cId))
+            throw new ClientNotFoundException("Client not found");
         repo.deleteById(cId);
         }
 }
