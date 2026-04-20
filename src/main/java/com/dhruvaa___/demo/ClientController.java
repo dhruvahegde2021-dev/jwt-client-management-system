@@ -34,7 +34,7 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<Map<String,Object>> getClient(Pageable pageable) {
-        Page<Client> page=service.getClient(pageable);
+        Page<ResponseDTO> page=service.getClient(pageable);
         Map<String,Object> response=new HashMap<>();
         response.put("data",page.getContent());
         response.put("Total pages:",page.getTotalPages());

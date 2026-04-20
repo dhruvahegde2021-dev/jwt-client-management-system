@@ -1,6 +1,7 @@
 package com.dhruvaa___.demo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
@@ -21,11 +22,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ClientNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleClientNotFound(ClientNotFoundException ex)
-    {
-        Map<String,String> mpp=new HashMap<>();
-        mpp.put("message",ex.getMessage());
-        return new ResponseEntity<>(mpp,HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, String>> handleClientNotFound(ClientNotFoundException ex) {
+        Map<String, String> mpp = new HashMap<>();
+        mpp.put("message", ex.getMessage());
+        return new ResponseEntity<>(mpp, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ErrorMessage> handleAppException(AppException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorMessage(ex.getMessage(), 400));
+    }
 }

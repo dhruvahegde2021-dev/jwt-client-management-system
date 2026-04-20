@@ -1,14 +1,20 @@
 package com.dhruvaa___.demo;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class AuthService {
 
     private final UserRepository repo;
+    private final PasswordEncoder encoder;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository repo) {
+    public AuthService(UserRepository repo, PasswordEncoder encoder, JwtUtil jwtUtil) {
         this.repo = repo;
+        this.encoder = encoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public String register(RegisterDTO registerDTO) {
@@ -16,11 +22,11 @@ public class AuthService {
         User existing = repo.findByUsername(registerDTO.getUsername());
 
         if (existing != null)
-            throw new RuntimeException("Username already exists");
+            throw new AppException("Username already exists");
 
         User user = new User();
         user.setUsername(registerDTO.getUsername());
-        user.setPassword(registerDTO.getPassword());
+        user.setPassword(encoder.encode(registerDTO.getPassword()));
         user.setRole("USER");
 
         repo.save(user);
@@ -33,12 +39,15 @@ public class AuthService {
         User user = repo.findByUsername(dto.getUsername());
 
         if (user == null)
-            throw new RuntimeException("User not found");
+            throw new AppException("User not found");
 
-        if (user.getPassword().equals(dto.getPassword())) {
-            return "TOKEN_GENERATED";
+        if (encoder.matches((dto.getPassword()),user.getPassword())) {
+           String token= jwtUtil.generateToken(user.getUsername());
+           String extracted=jwtUtil.extractUsername(token);
+           System.out.println("Extracted username:"+extracted);
+           return token;
         } else {
-            throw new RuntimeException("Invalid Password");
+            throw new AppException("Invalid Password");
         }
     }
 }

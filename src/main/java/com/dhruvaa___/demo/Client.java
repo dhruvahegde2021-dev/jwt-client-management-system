@@ -13,19 +13,18 @@ public class Client {
     private String name;
     private String lawyers;
 
-    public Client() {}
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Client(Long cId,String name, String lawyers) {
-        this.cId=cId;
-        this.name = name;
-        this.lawyers = lawyers;
+    public Client() {
     }
 
-    public Long getCId() {
+    public Long getcId() {
         return cId;
     }
 
-    public void setCId(Long cId) {
+    public void setcId(Long cId) {
         this.cId = cId;
     }
 
@@ -43,5 +42,13 @@ public class Client {
 
     public void setLawyers(String lawyers) {
         this.lawyers = lawyers;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
